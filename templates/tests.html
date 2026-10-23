@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Tests - StudyBuddy AI{% endblock %}
+{% block header %}Tests{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-header">
+      <h2>Upcoming & Past Tests</h2>
+    </div>
+    {% if tests %}
+      <div class="list">
+        {% for t in tests %}
+          <div class="list-item">
+            <div class="list-main">
+              <div class="list-title">
+                {{ t.title }} <span class="tag">{{ t.subject_name }}</span>
+              </div>
+              <div class="list-sub">
+                Date: {{ t.test_date }} ({{ t.days_remaining }} days remaining)
+                {% if t.total_topics > 0 %}
+                  · Readiness: {{ t.readiness }}% ({{ t.completed_topics }}/{{ t.total_topics }} topics completed)
+                {% else %}
+                  · No topics linked yet.
+                {% endif %}
+              </div>
+              {% if t.topics %}
+                <ul class="topic-list compact">
+                  {% for tp in t.topics %}
+                    <li class="{% if tp.is_completed %}topic-completed{% endif %}">
+                      {% if tp.is_completed %}✓{% else %}○{% endif %}
+                      {{ tp.name }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+            <div class="list-actions">
+              <form method="post" action="{{ url_for('delete_test', test_id=t.id) }}"
+                    onsubmit="return confirm('Delete this test?');">
+                <button type="submit" class="btn-small btn-red">Delete</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No tests yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Add Test</h2>
+    </div>
+    <form method="post" action="{{ url_for('add_test') }}" id="test-form">
+      <label>Title
+        <input type="text" name="title" required>
+      </label>
+      <label>Subject
+        <select name="subject_id" id="test-subject-select" required>
+          <option value="">-- Select subject --</option>
+          {% for s in subjects %}
+            <option value="{{ s.id }}">{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Date
+        <input type="date" name="test_date" required>
+      </label>
+      <label>Topics included</label>
+      <div id="test-topics-container" class="topics-select-placeholder">
+        Select a subject to load its topics.
+      </div>
+      <button type="submit" class="btn-primary mt-sm">Add Test</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const subjectSelect = document.getElementById('test-subject-select');
+    const container = document.getElementById('test-topics-container');
+
+    subjectSelect.addEventListener('change', function () {
+      const id = this.value;
+      if (!id) {
+        container.textContent = 'Select a subject to load its topics.';
+        return;
+      }
+      container.textContent = 'Loading topics...';
+      fetch(`/api/subjects/${id}/topics`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data.length) {
+            container.textContent = 'No topics defined for this subject.';
+            return;
+          }
+          const html = data.map(t => `
+            <label class="checkbox-line">
+              <input type="checkbox" name="topic_ids" value="${t.id}">
+              <span>${t.name} ${t.is_completed ? '(completed)' : ''}</span>
+            </label>
+          `).join('');
+          container.innerHTML = html;
+        })
+        .catch(err => {
+          console.error(err);
+          container.textContent = 'Error loading topics.';
+        });
+    });
+  });
+</script>
+{% endblock %}

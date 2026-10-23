@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Subjects & Attendance - StudyBuddy AI{% endblock %}
+{% block header %}Subjects & Attendance{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-header">
+      <h2>Your Subjects</h2>
+    </div>
+    {% if subjects %}
+      <div class="list">
+        {% for s in subjects %}
+          <div class="list-item subject-item">
+            <div class="list-main">
+              <div class="list-title">
+                {{ s.name }}
+                {% if s.code %}<span class="tag">{{ s.code }}</span>{% endif %}
+              </div>
+              <div class="list-sub">
+                {% if s.attendance_pct is not none %}
+                  Attendance: {{ s.attendance_pct }}%
+                  · Attended {{ s.attended_classes }}/{{ s.total_classes }}
+                  {% if s.attendance_pct < 75 %}
+                    · need {{ s.need_to_recover }} consecutive attended classes to reach 75%
+                  {% else %}
+                    · can miss {{ s.safe_to_miss }} upcoming classes and stay ≥75%
+                  {% endif %}
+                {% else %}
+                  No attendance recorded yet.
+                {% endif %}
+                <br>
+                Topics: {{ s.completed_topics }}/{{ s.total_topics }}
+              </div>
+            </div>
+            <div class="list-actions">
+              <form method="post" action="{{ url_for('update_attendance', subject_id=s.id) }}">
+                <input type="hidden" name="action" value="attended">
+                <button class="btn-small btn-green" type="submit">+ Attended</button>
+              </form>
+              <form method="post" action="{{ url_for('update_attendance', subject_id=s.id) }}">
+                <input type="hidden" name="action" value="missed">
+                <button class="btn-small btn-red" type="submit">Missed</button>
+              </form>
+              <form method="post" action="{{ url_for('delete_subject', subject_id=s.id) }}"
+                    onsubmit="return confirm('Delete this subject and all its data?');">
+                <button class="btn-small btn-outline" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="topic-section">
+            <div class="topic-header">Topics</div>
+            {% set topics = topics_by_subject.get(s.id, []) %}
+            {% if topics %}
+              <ul class="topic-list">
+                {% for t in topics %}
+                  <li class="{% if t.is_completed %}topic-completed{% endif %}">
+                    <form method="post" action="{{ url_for('toggle_topic', topic_id=t.id) }}">
+                      <button type="submit" class="topic-toggle">
+                        {% if t.is_completed %}✓{% else %}○{% endif %}
+                      </button>
+                      <span>{{ t.name }}</span>
+                    </form>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="muted">No topics yet for this subject.</p>
+            {% endif %}
+
+            <form method="post" action="{{ url_for('add_topics', subject_id=s.id) }}" class="mt-sm">
+              <label>Add topics (one per line)</label>
+              <textarea name="topics" rows="2" placeholder="New topic 1&#10;New topic 2"></textarea>
+              <button type="submit" class="btn-secondary btn-small">Add Topics</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>You have no subjects yet. Add one on the right.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Add Subject</h2>
+    </div>
+    <form method="post" action="{{ url_for('add_subject') }}">
+      <label>Subject name
+        <input type="text" name="name" required>
+      </label>
+      <label>Code (optional)
+        <input type="text" name="code">
+      </label>
+      <label>Initial topics (one per line, optional)
+        <textarea name="topics" rows="6"
+          placeholder="Introduction&#10;ER Diagrams&#10;Relational Model&#10;SQL&#10;Normalization"></textarea>
+      </label>
+      <button type="submit" class="btn-primary">Add Subject</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

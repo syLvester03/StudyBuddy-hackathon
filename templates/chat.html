@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}AI Study Assistant - StudyBuddy AI{% endblock %}
+{% block header %}AI Study Assistant{% endblock %}
+
+{% block content %}
+<div class="card chat-card">
+  <div class="chat-window" id="chat-window">
+    {% if history %}
+      {% for turn in history %}
+        <div class="chat-message user">
+          <div class="chat-label">You</div>
+          <div class="chat-bubble">{{ turn.user }}</div>
+        </div>
+        <div class="chat-message assistant">
+          <div class="chat-label">StudyBuddyAI</div>
+          <div class="chat-bubble">{{ turn.assistant }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="chat-message assistant">
+        <div class="chat-label">StudyBuddyAI</div>
+        <div class="chat-bubble">
+          Ask me what to study next, how ready you are for a test, or which topics to prioritise.
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <form id="chat-form" class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Type your question..." autocomplete="off">
+    <button type="submit" class="btn-primary">Send</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

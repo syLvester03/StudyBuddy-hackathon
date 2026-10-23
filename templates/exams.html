@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Exams - StudyBuddy AI{% endblock %}
+{% block header %}Exams{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-header">
+      <h2>Upcoming & Past Exams</h2>
+    </div>
+    {% if exams %}
+      <div class="list">
+        {% for e in exams %}
+          <div class="list-item">
+            <div class="list-main">
+              <div class="list-title">
+                {{ e.title }} <span class="tag">{{ e.subject_name }}</span>
+              </div>
+              <div class="list-sub">
+                Date: {{ e.exam_date }} ({{ e.days_remaining }} days remaining)
+                {% if e.total_topics > 0 %}
+                  · Readiness: {{ e.readiness }}% ({{ e.completed_topics }}/{{ e.total_topics }} topics completed)
+                {% else %}
+                  · No topics linked yet.
+                {% endif %}
+              </div>
+              {% if e.topics %}
+                <ul class="topic-list compact">
+                  {% for tp in e.topics %}
+                    <li class="{% if tp.is_completed %}topic-completed{% endif %}">
+                      {% if tp.is_completed %}✓{% else %}○{% endif %}
+                      {{ tp.name }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+            <div class="list-actions">
+              <form method="post" action="{{ url_for('delete_exam', exam_id=e.id) }}"
+                    onsubmit="return confirm('Delete this exam?');">
+                <button type="submit" class="btn-small btn-red">Delete</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No exams yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Add Exam</h2>
+    </div>
+    <form method="post" action="{{ url_for('add_exam') }}" id="exam-form">
+      <label>Title
+        <input type="text" name="title" required>
+      </label>
+      <label>Subject
+        <select name="subject_id" id="exam-subject-select" required>
+          <option value="">-- Select subject --</option>
+          {% for s in subjects %}
+            <option value="{{ s.id }}">{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Date
+        <input type="date" name="exam_date" required>
+      </label>
+      <label>Topics included</label>
+      <div id="exam-topics-container" class="topics-select-placeholder">
+        Select a subject to load its topics.
+      </div>
+      <button type="submit" class="btn-primary mt-sm">Add Exam</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const subjectSelect = document.getElementById('exam-subject-select');
+    const container = document.getElementById('exam-topics-container');
+
+    subjectSelect.addEventListener('change', function () {
+      const id = this.value;
+      if (!id) {
+        container.textContent = 'Select a subject to load its topics.';
+        return;
+      }
+      container.textContent = 'Loading topics...';
+      fetch(`/api/subjects/${id}/topics`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data.length) {
+            container.textContent = 'No topics defined for this subject.';
+            return;
+          }
+          const html = data.map(t => `
+            <label class="checkbox-line">
+              <input type="checkbox" name="topic_ids" value="${t.id}">
+              <span>${t.name} ${t.is_completed ? '(completed)' : ''}</span>
+            </label>
+          `).join('');
+          container.innerHTML = html;
+        })
+        .catch(err => {
+          console.error(err);
+          container.textContent = 'Error loading topics.';
+        });
+    });
+  });
+</script>
+{% endblock %}

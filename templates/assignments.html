@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Assignments - StudyBuddy AI{% endblock %}
+{% block header %}Assignments{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-header">
+      <h2>Current Assignments</h2>
+    </div>
+    {% if assignments %}
+      <div class="list">
+        {% for a in assignments %}
+          <div class="list-item">
+            <div class="list-main">
+              <div class="list-title">
+                {{ a.title }}
+                {% if a.subject_name %}<span class="tag">{{ a.subject_name }}</span>{% endif %}
+                {% if a.is_completed %}<span class="tag tag-green">Done</span>{% endif %}
+              </div>
+              <div class="list-sub">
+                {% if a.due_date %}
+                  Due {{ a.due_date }} ({{ a.days_remaining }} days remaining)
+                {% else %}
+                  No due date
+                {% endif %}
+                {% if a.description %}
+                  · {{ a.description }}
+                {% endif %}
+              </div>
+              <div class="list-sub">
+                <button class="btn-small btn-outline"
+                        onclick="requestAssignmentSuggestions({{ a.id }})">
+                  AI: What should I review?
+                </button>
+              </div>
+              <div class="ai-suggestions" id="ai-assignment-{{ a.id }}"></div>
+            </div>
+            <div class="list-actions">
+              <form method="post" action="{{ url_for('toggle_assignment', assignment_id=a.id) }}">
+                <button type="submit" class="btn-small btn-secondary">
+                  {% if a.is_completed %}Mark Undone{% else %}Mark Done{% endif %}
+                </button>
+              </form>
+              <form method="post" action="{{ url_for('delete_assignment', assignment_id=a.id) }}"
+                    onsubmit="return confirm('Delete this assignment?');">
+                <button type="submit" class="btn-small btn-red">Delete</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No assignments yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Add Assignment</h2>
+    </div>
+    <form method="post" action="{{ url_for('add_assignment') }}">
+      <label>Title
+        <input type="text" name="title" required>
+      </label>
+      <label>Subject (optional)
+        <select name="subject_id">
+          <option value="">-- None / General --</option>
+          {% for s in subjects %}
+            <option value="{{ s.id }}">{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Due date (optional)
+        <input type="date" name="due_date">
+      </label>
+      <label>Description (optional)
+        <textarea name="description" rows="4"></textarea>
+      </label>
+      <button type="submit" class="btn-primary">Add Assignment</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function requestAssignmentSuggestions(id) {
+    const container = document.getElementById('ai-assignment-' + id);
+    if (!container) return;
+    container.textContent = 'Loading AI suggestions...';
+
+    fetch(`/api/assignments/${id}/ai_suggestions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) {
+        container.textContent = data.error;
+      } else {
+        container.textContent = data.suggestions;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      container.textContent = 'Error getting AI suggestions.';
+    });
+  }
+</script>
+{% endblock %}

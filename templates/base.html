@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}StudyBuddy AI{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-mark">⚡</div>
+        <div class="logo-text">StudyBuddy<span>AI</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('dashboard') }}"
+           class="nav-link {% if active_page=='dashboard' %}active{% endif %}">
+          Dashboard
+        </a>
+        <a href="{{ url_for('subjects') }}"
+           class="nav-link {% if active_page=='subjects' %}active{% endif %}">
+          Subjects & Attendance
+        </a>
+        <a href="{{ url_for('assignments') }}"
+           class="nav-link {% if active_page=='assignments' %}active{% endif %}">
+          Assignments
+        </a>
+        <a href="{{ url_for('tests') }}"
+           class="nav-link {% if active_page=='tests' %}active{% endif %}">
+          Tests
+        </a>
+        <a href="{{ url_for('exams') }}"
+           class="nav-link {% if active_page=='exams' %}active{% endif %}">
+          Exams
+        </a>
+        <a href="{{ url_for('chat') }}"
+           class="nav-link {% if active_page=='chat' %}active{% endif %}">
+          AI Study Assistant
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-name">{{ session.get('user_name','Student') }}</div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="page-header">
+        <h1>{% block header %}{% endblock %}</h1>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, msg in messages %}
+            <div class="flash flash-{{ category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% endwith %}
+
+      <section class="page-content">
+        {% block content %}{% endblock %}
+      </section>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

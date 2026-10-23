@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - StudyBuddy AI{% endblock %}
+{% block header %}Overview Dashboard{% endblock %}
+
+{% block content %}
+<div class="grid grid-3">
+  <div class="card stat-card">
+    <div class="stat-label">Total Subjects</div>
+    <div class="stat-value">{{ total_subjects }}</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-label">Attendance Warnings (&lt;75%)</div>
+    <div class="stat-value">{{ attendance_warnings }}</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-label">Pending Assignments</div>
+    <div class="stat-value">{{ pending_assignments_count }}</div>
+  </div>
+</div>
+
+<div class="grid grid-2 mt-lg">
+  <div class="card">
+    <div class="card-header">
+      <h2>Attendance Status (low / at risk)</h2>
+    </div>
+    {% if low_attendance %}
+      <div class="list">
+        {% for s in low_attendance %}
+          <div class="list-item">
+            <div class="list-main">
+              <div class="list-title">{{ s.name }}</div>
+              <div class="list-sub">
+                {% if s.attendance_pct is not none %}
+                  {{ s.attendance_pct }}% attendance
+                  {% if s.attendance_pct < 75 %}
+                    · below 75% — attend {{ s.need_to_recover }} upcoming classes to recover
+                  {% else %}
+                    · can safely miss {{ s.safe_to_miss }} classes and stay above 75%
+                  {% endif %}
+                {% else %}
+                  No classes recorded yet.
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No subjects with low attendance yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Urgent Tasks</h2>
+    </div>
+    {% if urgent_items %}
+      <div class="list">
+        {% for item in urgent_items %}
+          <div class="list-item">
+            <div class="list-main">
+              <div class="list-title">
+                [{{ item.type }}] {{ item.subject_name }} — {{ item.title }}
+              </div>
+              <div class="list-sub">
+                {% if item.date %}
+                  Due {{ item.date }} ({{ item.days_remaining }} days remaining)
+                {% else %}
+                  No date set
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No urgent tasks at the moment.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid grid-2 mt-lg">
+  <div class="card">
+    <div class="card-header"><h2>Upcoming Tests</h2></div>
+    {% if upcoming_tests_count %}
+      <p>{{ upcoming_tests_count }} upcoming test{{ upcoming_tests_count != 1 and 's' or '' }} scheduled.</p>
+      <p><a href="{{ url_for('tests') }}" class="link">View all tests →</a></p>
+    {% else %}
+      <p>No tests scheduled.</p>
+    {% endif %}
+  </div>
+  <div class="card">
+    <div class="card-header"><h2>Upcoming Exams</h2></div>
+    {% if upcoming_exams_count %}
+      <p>{{ upcoming_exams_count }} upcoming exam{{ upcoming_exams_count != 1 and 's' or '' }} scheduled.</p>
+      <p><a href="{{ url_for('exams') }}" class="link">View all exams →</a></p>
+    {% else %}
+      <p>No exams scheduled.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
