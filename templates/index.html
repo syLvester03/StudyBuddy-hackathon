@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}StudyBuddy AI{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Inter: clean, modern UI font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Animated gradient blobs behind glass panels -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">StudyBuddy</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-link {% if active_page=='dashboard' %}active{% endif %}">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-text">Dashboard</span>
+        </a>
+        <a href="{{ url_for('subjects') }}" class="nav-link {% if active_page=='subjects' %}active{% endif %}">
+          <span class="nav-icon">📚</span>
+          <span class="nav-text">Subjects & Attendance</span>
+        </a>
+        <a href="{{ url_for('assignments') }}" class="nav-link {% if active_page=='assignments' %}active{% endif %}">
+          <span class="nav-icon">📝</span>
+          <span class="nav-text">Assignments</span>
+        </a>
+        <a href="{{ url_for('tests') }}" class="nav-link {% if active_page=='tests' %}active{% endif %}">
+          <span class="nav-icon">🧪</span>
+          <span class="nav-text">Tests</span>
+        </a>
+        <a href="{{ url_for('exams') }}" class="nav-link {% if active_page=='exams' %}active{% endif %}">
+          <span class="nav-icon">🎓</span>
+          <span class="nav-text">Exams</span>
+        </a>
+        <a href="{{ url_for('chat') }}" class="nav-link {% if active_page=='chat' %}active{% endif %}">
+          <span class="nav-icon">💬</span>
+          <span class="nav-text">AI Study Assistant</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="{{ url_for('logout') }}" class="nav-link">
+          <span class="nav-icon">🚪</span>
+          <span class="nav-text">Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <!-- Topbar with centered search -->
+      <header class="topbar">
+        <div class="topbar-left"></div>
+
+       <div class="topbar-center">
+      {% if active_page != 'chat' %}
+     <div class="search-bar">
+    <input
+      type="text"
+      id="global-search"
+      placeholder="Search subjects, assignments, tests, exams..."
+    >
+  </div>
+  {% endif %}
+</div>
+
+        <div class="topbar-right">
+          <div class="user-profile">
+            <div class="avatar">{{ session.get('user_name', 'S')[0] | upper }}</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page body -->
+      <section class="page-content">
+        <div class="page-header">
+          <h1>{% block header %}{% endblock %}</h1>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-container">
+            {% for category, msg in messages %}
+              <div class="flash flash-{{ category }}">{{ msg }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="content-area">
+          {% block content %}{% endblock %}
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
