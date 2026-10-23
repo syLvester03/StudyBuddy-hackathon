@@ -696,3 +696,84 @@ textarea {
 .checkbox-line span {
   color: var(--text-main);
 }
+/* =========================
+   Auth pages (Login / Register)
+   ========================= */
+
+body.auth-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+
+  /* reuse the same gradient; body already has it, but we ensure here too */
+  background: linear-gradient(-45deg, #020617, #111827, #1d1b56, #18181b);
+  background-size: 400% 400%;
+  animation: bg-shift 22s ease infinite;
+
+  font-family: var(--font-app);
+  color: var(--text-main);
+}
+
+/* Glass card in the center */
+.auth-card {
+  width: 360px;
+  padding: 24px 24px 26px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.25), transparent 55%),
+    rgba(15, 23, 42, 0.92);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+/* Title / subtitle */
+.auth-card h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.auth-card h1 span {
+  color: var(--accent);
+}
+.auth-card h2 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+/* Form layout */
+.auth-card form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: var(--text-dim);
+}
+.auth-card form input {
+  margin-top: 4px;
+}
+
+.auth-card .btn-primary {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Bottom text */
+.auth-alt {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.auth-alt a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.auth-alt a:hover {
+  text-decoration: underline;
+}
