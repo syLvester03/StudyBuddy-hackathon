@@ -98,12 +98,12 @@
             container.textContent = 'No topics defined for this subject.';
             return;
           }
-          const html = data.map(t => `
-            <label class="checkbox-line">
-              <input type="checkbox" name="topic_ids" value="${t.id}">
-              <span>${t.name} ${t.is_completed ? '(completed)' : ''}</span>
-            </label>
-          `).join('');
+         const html = data.map(t => `
+          <label class="checkbox-line">
+            <input type="checkbox" class="sb-checkbox" name="topic_ids" value="${t.id}">
+            <span>${t.name} ${t.is_completed ? '(completed)' : ''}</span>
+          </label>
+        `).join('');
           container.innerHTML = html;
         })
         .catch(err => {

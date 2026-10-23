@@ -53,18 +53,21 @@
             <div class="topic-header">Topics</div>
             {% set topics = topics_by_subject.get(s.id, []) %}
             {% if topics %}
-              <ul class="topic-list">
-                {% for t in topics %}
-                  <li class="{% if t.is_completed %}topic-completed{% endif %}">
-                    <form method="post" action="{{ url_for('toggle_topic', topic_id=t.id) }}">
-                      <button type="submit" class="topic-toggle">
-                        {% if t.is_completed %}✓{% else %}○{% endif %}
-                      </button>
-                      <span>{{ t.name }}</span>
-                    </form>
-                  </li>
-                {% endfor %}
-              </ul>
+           <ul class="topic-list">
+          {% for t in topics %}
+            <li class="topic-item {% if t.is_completed %}topic-completed{% endif %}">
+              <label class="topic-toggle-label">
+                <input
+                  type="checkbox"
+                  class="sb-checkbox topic-toggle-checkbox"
+                  data-toggle-url="{{ url_for('toggle_topic', topic_id=t.id) }}"
+                  {% if t.is_completed %}checked{% endif %}
+                >
+                <span>{{ t.name }}</span>
+              </label>
+            </li>
+          {% endfor %}
+        </ul>
             {% else %}
               <p class="muted">No topics yet for this subject.</p>
             {% endif %}

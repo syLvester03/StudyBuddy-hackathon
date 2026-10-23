@@ -3,36 +3,69 @@
 {% block header %}AI Study Assistant{% endblock %}
 
 {% block content %}
-<div class="card chat-card">
-  <div class="chat-window" id="chat-window">
-    {% if history %}
-      {% for turn in history %}
-        <div class="chat-message user">
-          <div class="chat-label">You</div>
-          <div class="chat-bubble">{{ turn.user }}</div>
-        </div>
-        <div class="chat-message assistant">
-          <div class="chat-label">StudyBuddyAI</div>
-          <div class="chat-bubble">{{ turn.assistant }}</div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <div class="chat-message assistant">
-        <div class="chat-label">StudyBuddyAI</div>
-        <div class="chat-bubble">
-          Ask me what to study next, how ready you are for a test, or which topics to prioritise.
-        </div>
-      </div>
-    {% endif %}
+<div class="chat-layout">
+  <div class="chat-hero">
+    <h2>What can I help you with today?</h2>
+    <p>
+      Ask about what to study next, how prepared you are for a test, or which topics are weak.
+      StudyBuddyAI answers using your real subjects, attendance, and assessments.
+    </p>
+    <div class="chat-hero-buttons">
+      <button type="button" class="hero-pill"
+              onclick="quickAsk('What should I study tonight?')">
+        📚 What to study today
+      </button>
+      <button type="button" class="hero-pill"
+              onclick="quickAsk('How ready am I for my next test?')">
+        🔍 Check test readiness
+      </button>
+      <button type="button" class="hero-pill"
+              onclick="quickAsk('Help me plan my studies for this week.')">
+        📆 Plan this week
+      </button>
+    </div>
   </div>
 
-  <form id="chat-form" class="chat-input-row">
-    <input type="text" id="chat-input" placeholder="Type your question..." autocomplete="off">
+  <div class="card chat-card glass floating">
+    <div class="chat-window" id="chat-window">
+      {% if history %}
+        {% for turn in history %}
+          <div class="chat-message user">
+            <div class="chat-label">You</div>
+            <div class="chat-bubble">{{ turn.user }}</div>
+          </div>
+          <div class="chat-message assistant">
+            <div class="chat-label">StudyBuddyAI</div>
+            <div class="chat-bubble">{{ turn.assistant }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="chat-message assistant">
+          <div class="chat-label">StudyBuddyAI</div>
+          <div class="chat-bubble">
+            Ask me anything about your courses, upcoming assessments, or how to prioritise topics today.
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <form id="chat-form" class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Message StudyBuddyAI..." autocomplete="off">
+    <button type="button" id="clear-chat" class="btn-outline">Clear chat</button>
     <button type="submit" class="btn-primary">Send</button>
-  </form>
+     </form>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script>
+  function quickAsk(text) {
+    const input = document.getElementById('chat-input');
+    if (!input) return;
+    input.value = text;
+    input.focus();
+  }
+</script>
 {% endblock %}

@@ -11,8 +11,8 @@
     {% if assignments %}
       <div class="list">
         {% for a in assignments %}
-          <div class="list-item">
-            <div class="list-main">
+  <div class="list-item" data-completed="{{ 1 if a.is_completed else 0 }}">
+    <div class="list-main">
               <div class="list-title">
                 {{ a.title }}
                 {% if a.subject_name %}<span class="tag">{{ a.subject_name }}</span>{% endif %}
@@ -37,15 +37,13 @@
               <div class="ai-suggestions" id="ai-assignment-{{ a.id }}"></div>
             </div>
             <div class="list-actions">
-              <form method="post" action="{{ url_for('toggle_assignment', assignment_id=a.id) }}">
-                <button type="submit" class="btn-small btn-secondary">
-                  {% if a.is_completed %}Mark Undone{% else %}Mark Done{% endif %}
-                </button>
-              </form>
-              <form method="post" action="{{ url_for('delete_assignment', assignment_id=a.id) }}"
-                    onsubmit="return confirm('Delete this assignment?');">
-                <button type="submit" class="btn-small btn-red">Delete</button>
-              </form>
+              <form method="post"
+                class="js-assignment-toggle-form"
+                action="{{ url_for('toggle_assignment', assignment_id=a.id) }}">
+            <button type="submit" class="btn-small btn-secondary">
+              {% if a.is_completed %}Mark Undone{% else %}Mark Done{% endif %}
+            </button>
+          </form>
             </div>
           </div>
         {% endfor %}

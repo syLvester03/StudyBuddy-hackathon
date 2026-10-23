@@ -1282,11 +1282,13 @@ def api_chat():
         "assignments, tests, and exams, which are provided as context. "
         "Give direct, practical answers only. Do not add motivational fluff, apologies, or "
         "self-promotion. If you recommend what to study, be specific about subjects, topics, "
-        "and upcoming dates from the context. "
-        "Very important: FORMAT your answers in clean, short markdown:\n"
-        "- Use headings only if really needed.\n"
-        "- Use numbered or bulleted lists for steps and priorities.\n"
+        "and upcoming dates from the context.\n\n"
+        "Formatting rules (important):\n"
+        "- Use plain markdown only: numbered lists (1., 2., 3.) and bullet lists (- item).\n"
         "- Put each step or recommendation on its own line.\n"
+        "- Do NOT use HTML tags such as <br>, <p>, <table>, or <tr>.\n"
+        "- Do NOT draw ASCII tables or use '|' characters to make columns.\n"
+        "- Do NOT wrap the entire answer in a code block.\n"
         "- Avoid giant paragraphs; keep sentences short and to the point."
     ),
 }
@@ -1306,7 +1308,7 @@ def api_chat():
 
     messages = [system_msg, context_msg] + past_msgs + [user_msg]
 
-    reply = call_groq_chat(messages, max_tokens=500)
+    reply = call_groq_chat(messages, max_tokens=1500)
 
     # Store in session history
     history.append({"user": user_message, "assistant": reply})
@@ -1315,6 +1317,13 @@ def api_chat():
     session["chat_history"] = history
 
     return jsonify({"reply": reply})
+
+@app.route("/api/chat/clear", methods=["POST"])
+@login_required
+def api_chat_clear():
+    """Clear the chat history stored in the session."""
+    session["chat_history"] = []
+    return jsonify({"ok": True})
 
 if __name__ == "__main__":
     app.run(debug=True)
