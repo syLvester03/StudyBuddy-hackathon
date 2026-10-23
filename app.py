@@ -955,14 +955,17 @@ def assignment_ai_suggestions(assignment_id):
     )
 
     system_msg = {
-        "role": "system",
-        "content": (
-            "You are a concise study assistant. "
-            "Given an assignment and a list of course topics with completion status, "
-            "identify the most relevant topics and what the student should review first. "
-            "Be direct, practical, and avoid any fluff or self-reference."
-        ),
-    }
+    "role": "system",
+    "content": (
+        "You are a concise study assistant. "
+        "Given an assignment and a list of course topics with completion status, "
+        "identify the most relevant topics and what the student should review first. "
+        "Be direct, practical, and avoid any fluff or self-reference. "
+        "Format the response as a short numbered list of review steps in markdown. "
+        "Each step on its own line with the key topic in **bold** at the start. "
+        "Do not write long paragraphs or introductions."
+    ),
+}
 
     user_text = f"""
 Assignment:
@@ -1279,14 +1282,12 @@ def api_chat():
         "assignments, tests, and exams, which are provided as context. "
         "Give direct, practical answers only. Do not add motivational fluff, apologies, or "
         "self-promotion. If you recommend what to study, be specific about subjects, topics, "
-        "and upcoming dates from the context.\n\n"
-        "FORMATTING RULES:\n"
-        "- Use Markdown.\n"
-        "- Put each numbered item and each bullet on its own line.\n"
-        "- Leave a blank line between sections.\n"
-        "- Use at most one level of bullets under a numbered item.\n"
-        "- Keep the whole answer under 250 words.\n"
-        "- Never cut off mid-sentence; if space is short, give fewer items."
+        "and upcoming dates from the context. "
+        "Very important: FORMAT your answers in clean, short markdown:\n"
+        "- Use headings only if really needed.\n"
+        "- Use numbered or bulleted lists for steps and priorities.\n"
+        "- Put each step or recommendation on its own line.\n"
+        "- Avoid giant paragraphs; keep sentences short and to the point."
     ),
 }
 

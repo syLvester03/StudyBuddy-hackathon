@@ -100,7 +100,7 @@
       if (data.error) {
         container.textContent = data.error;
       } else {
-        container.textContent = data.suggestions;
+        container.innerHTML = renderMarkdown(data.suggestions);
       }
     })
     .catch(err => {

@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', function () {
     label.className = 'chat-label';
     label.textContent = role === 'user' ? 'You' : 'StudyBuddyAI';
 
-    const bubble = document.createElement('div');
-    bubble.className = 'chat-bubble';
-    bubble.textContent = text;
+   const bubble = document.createElement('div');
+   bubble.className = 'chat-bubble'; 
+   bubble.innerHTML = renderMarkdown(text);  // use our markdown renderer
 
     wrapper.appendChild(label);
     wrapper.appendChild(bubble);

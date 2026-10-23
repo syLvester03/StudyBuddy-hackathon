@@ -534,6 +534,7 @@ textarea:focus {
   font-size: 13px;
   max-width: 80%;
   text-align: left;
+  white-space: pre-wrap;  /* preserve newlines from the model */
 }
 .chat-message.user .chat-bubble {
   background: var(--accent);
